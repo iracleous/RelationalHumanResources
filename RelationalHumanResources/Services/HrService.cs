@@ -72,38 +72,93 @@ public class HrService : IHrService
 
     public ApiResult<Department> CreateDepartment(Department department)
     {
-        _context.Departments.Add(department);
-        _context.SaveChanges();
-        return department;
+        try
+        {
+            _context.Departments.Add(department);
+            _context.SaveChanges();
+            return new ApiResult<Department>
+            {
+                Data = department,
+                Status = 0,
+                Message = "ok"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult<Department>
+            {
+                Status = 3,
+                Message = "Exception: " + ex.Message
+            };
+        }
     }
 
     public ApiResult<Employee> CreateEmployee(Employee employee)
     {
-        _context.Employees.Add(employee);
-        _context.SaveChanges();
-        return employee;
+        try
+        {
+            _context.Employees.Add(employee);
+            _context.SaveChanges();
+            return new ApiResult<Employee>
+            {
+                Data = employee,
+                Status = 0,
+                Message = "ok"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult<Employee>
+            {
+                Status = 3,
+                Message = "Exception: " + ex.Message
+            };
+        }
     }
 
     public ApiResult<bool> DeleteEmployee(long employeeId)
     {
         var employee = _context.Employees.Find(employeeId);
-        if (employee == null) return false;
-        _context.Remove(employee);
+        if (employee == null) 
+            return new ApiResult<bool>
+            {
+                Data = false,
+                Status = 1,
+                Message = "employee not found"
+            };
+        
         try
         {
+            _context.Remove(employee);
             _context.SaveChanges() ;
+            return new ApiResult<bool>
+            {
+                Data = true,
+                Status = 0,
+                Message = "ok"
+            };
         }
-        catch { return false; }
-
-        
-        return true;
+        catch (Exception ex)
+        {
+            return new ApiResult<bool>
+            {
+                Data = false,
+                Status = 3,
+                Message = "Exception: " + ex.Message
+            };
+        }
     }
 
     public ApiResult<List<Department>> GetAllDepartment()
     {
-        return _context
+        return new ApiResult<List<Department>>
+        {
+            Data = _context
                .Departments
-                .ToList();
+                .ToList(),
+            Status = 0,
+            Message = "ok"
+        };
     }
 
     public ApiResult<List<Employee>> GetAllEmployees()
