@@ -151,45 +151,99 @@ public class HrService : IHrService
 
     public ApiResult<List<Department>> GetAllDepartment()
     {
-        return new ApiResult<List<Department>>
+        try
         {
-            Data = _context
-               .Departments
-                .ToList(),
-            Status = 0,
-            Message = "ok"
-        };
+            return new ApiResult<List<Department>>
+            {
+                Data = _context
+                   .Departments
+                    .ToList(),
+                Status = 0,
+                Message = "ok"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult<List<Department>>
+            {
+                Status = 3,
+                Message = ex.Message
+            };
+        }
     }
 
     public ApiResult<List<Employee>> GetAllEmployees()
     {
-        return _context
+        try
+        {
+            return new ApiResult<List<Employee>>
+            {
+                Data = _context
                .Employees
                .Include(employee => employee.Department)
-               .ToList();
+               .ToList(),
+                Status = 0,
+                Message = "ok"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult<List<Employee>>
+            {
+                Status = 3,
+                Message = ex.Message
+            };
+        }
     }
 
     public ApiResult<Employee> GetEmployee(long employeeId)
     {
-        return _context.Employees
-             .Where(employee => employee.Id==employeeId)
+        try
+        {
+            return new ApiResult<Employee>
+            {
+                Data = _context.Employees
+             .Where(employee => employee.Id == employeeId)
            .Include(employee => employee.Department)
-            .Single();
-       //.Find(employeeId);
+            .Single(),
+                Status = 0,
+                Message = "ok"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult<Employee>
+            {
+                Status = 3,
+                Message = ex.Message
+            };
+        }
     }
 
     public ApiResult<bool> UpdateEmployee(SalaryUpdate salaryUpdate)
     {
-         if (salaryUpdate == null) return false;
+         if (salaryUpdate == null) return  new ApiResult<bool>
+         {
+             Status = 4,
+             Message = "null input"
+         };  
          var employee = _context
             .Employees
             .Find(salaryUpdate.EmployeeId);
 
-        if (employee == null) return false;
-        
+        if (employee == null) return new ApiResult<bool>
+        {
+            Status = 1,
+            Message = "employee not found"
+        }; ;
+
         if (salaryUpdate.SalaryAmount <= Constants.BasicSalary)
         {
-            return false;
+            return new ApiResult<bool>
+            {
+                Status = 5,
+                Message = "not acceptable salary"
+            }; ;
         }
         var salaryHistory = new SalaryHistory
         {
@@ -198,10 +252,26 @@ public class HrService : IHrService
             Active = true,
             StartingDate = salaryUpdate.StartDate
         };
-        
-        _context.SalariesHistory.Add(salaryHistory);
-        _context.SaveChanges();
+        try
+        {
+            _context.SalariesHistory.Add(salaryHistory);
+            _context.SaveChanges();
 
-        return true;
+            return new ApiResult<bool>
+            {
+                Data = true,
+                Status = 0,
+                Message = "ok"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult<bool>
+            {
+                Status = 3,
+                Message = ex.Message
+            };
+        }
+
     }
 }
