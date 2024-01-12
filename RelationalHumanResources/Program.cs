@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using RelationalHumanResources.Data;
 using RelationalHumanResources.Services;
 using System.Text.Json.Serialization;
@@ -13,6 +14,15 @@ var optionsCon = builder.Configuration
            .GetConnectionString("MyConn");
 builder.Services.AddDbContext<HrDbcontext>(options =>
         options.UseSqlServer(optionsCon));
+
+// Apply pending migrations and create/update the database
+var optionsBuilder = new DbContextOptionsBuilder<HrDbcontext>();
+optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("MyConn"));
+using (var dbContext = new HrDbcontext(optionsBuilder.Options))
+{
+    dbContext.Database.Migrate();
+}
+
 
 
 builder.Services.AddScoped<IHrService, HrService>();

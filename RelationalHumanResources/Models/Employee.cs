@@ -7,6 +7,9 @@ namespace RelationalHumanResources.Models
         public long Id { get; set; } 
         public string Name { get; set; } = string.Empty;
         public DateOnly? HiringDate { get; set; }
+        public EmployeeCategory Category { get; set; }  
+
+
         public virtual Department? Department { get; set; }
         public virtual List<SalaryHistory>
             SalaryHistory

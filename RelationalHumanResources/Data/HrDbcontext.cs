@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RelationalHumanResources.Models;
+using System.Security.Claims;
 
 namespace RelationalHumanResources.Data
 {
@@ -25,6 +26,14 @@ namespace RelationalHumanResources.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SalaryHistory>()
+                .Property(sal => sal.Amount)
+                .HasPrecision(12, 2);
+
+            base.OnModelCreating(modelBuilder);
+        }
 
     }
 }
