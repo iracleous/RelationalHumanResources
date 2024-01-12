@@ -12,8 +12,8 @@ using RelationalHumanResources.Data;
 namespace RelationalHumanResources.Migrations
 {
     [DbContext(typeof(HrDbcontext))]
-    [Migration("20240110090758_dimitris")]
-    partial class dimitris
+    [Migration("20240112085606_Dimitris")]
+    partial class Dimitris
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
