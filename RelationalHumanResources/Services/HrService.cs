@@ -5,22 +5,6 @@ using RelationalHumanResources.Models;
 
 namespace RelationalHumanResources.Services;
 
-public interface IHrService
-{
-    public ApiResult<List<Employee>> GetAllEmployees();
-    public ApiResult<Employee> CreateEmployee(Employee employee);
-    public ApiResult<bool> UpdateEmployee(SalaryUpdate salaryUpdate);
-    public ApiResult<bool> DeleteEmployee(long employeeId);
-    public ApiResult<Employee> GetEmployee(long employeeId);
-
-
-    public ApiResult<List<Department>> GetAllDepartment();
-    public ApiResult<Department> CreateDepartment(Department department);
-
-    public ApiResult<bool> AssignEmployeeToDepartment(long  employeeId, 
-        long departmentId);
-}
-
 public class HrService : IHrService
 {
     private readonly HrDbcontext _context;
@@ -29,9 +13,9 @@ public class HrService : IHrService
         _context = context;
     }
 
-    public ApiResult<bool> AssignEmployeeToDepartment(long employeeId, long departmentId)
+    public ApiResult<bool> AssignEmployeeToDepartment(EmployeeDepartmentDto employeeDepartmentDto)
     {
-        var employee = _context.Employees.Find(employeeId);
+        var employee = _context.Employees.Find(employeeDepartmentDto.EmployeeId);
         if (employee == null)
             return new ApiResult<bool>
             {       
@@ -39,7 +23,7 @@ public class HrService : IHrService
                 Status=1, 
                 Message="Employee not found" 
              };
-        var department = _context.Departments.Find(departmentId);
+        var department = _context.Departments.Find(employeeDepartmentDto.DepartmentId);
         if (department == null)
             return new ApiResult<bool>
             {
@@ -70,12 +54,12 @@ public class HrService : IHrService
         }
     }
 
-    public ApiResult<Department> CreateDepartment(Department department)
+    public async Task<ApiResult<Department>> CreateDepartmentAsync(Department department)
     {
         try
         {
             _context.Departments.Add(department);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return new ApiResult<Department>
             {
                 Data = department,
@@ -149,15 +133,15 @@ public class HrService : IHrService
         }
     }
 
-    public ApiResult<List<Department>> GetAllDepartment()
+    public async Task<ApiResult<List<Department>>> GetAllDepartmentAsync()
     {
         try
         {
             return new ApiResult<List<Department>>
             {
-                Data = _context
+                Data = await _context
                    .Departments
-                    .ToList(),
+                    .ToListAsync(),
                 Status = 0,
                 Message = "ok"
             };
@@ -220,6 +204,21 @@ public class HrService : IHrService
         }
     }
 
+    public async Task<ApiResult<bool>> RemoveEmployeeFromDepartmentAsync(
+        EmployeeDepartmentDto employeeDepartment)
+    {
+        try
+        {
+            var employee = await _context.Employees.FindAsync(employeeDepartment.EmployeeId);
+            employee.Department = null;
+            await _context.SaveChangesAsync();
+            return new ApiResult<bool> { Data = true };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult<bool> { Data = false, Status = 1, Message = ex.Message };
+        }
+    }
     public ApiResult<bool> UpdateEmployee(SalaryUpdate salaryUpdate)
     {
          if (salaryUpdate == null) return  new ApiResult<bool>

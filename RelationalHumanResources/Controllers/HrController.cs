@@ -35,22 +35,34 @@ namespace RelationalHumanResources.Controllers
 
         [HttpPost]
         [Route("department")]
-        public ApiResult<Department> Post(Department department)
+        public async Task<ApiResult<Department>> Post(Department department)
         {
-            return _service.CreateDepartment(department);
+            return await _service.CreateDepartmentAsync(department);
         }
+
         [HttpGet]
         [Route("department")]
-        public ApiResult<List<Department>> GetAllDepartments()
+        public async Task<ApiResult<List<Department>>> GetAllDepartments()
         {
-            return _service.GetAllDepartment();
+            return await _service.GetAllDepartmentAsync();
         }
+
         [HttpPost]
-        [Route("department/{departmentId}/employee/{employeeId}")]
-        public ApiResult<bool> AssignEmployeeToDepartment( long departmentId, long employeeId)
+        [Route("department/employee")]
+        public ApiResult<bool> AssignEmployeeToDepartment(
+            [FromBody] EmployeeDepartmentDto employeeDepartment)
         {
-            return _service.AssignEmployeeToDepartment(employeeId,departmentId);
+            return _service.AssignEmployeeToDepartment(employeeDepartment);
         }
+
+        [HttpDelete]
+        [Route("department/employee")]
+        public async Task<ApiResult<bool>> RemoveEmployeeFromDepartment(
+           [FromBody] EmployeeDepartmentDto employeeDepartment)
+        {
+            return await _service.RemoveEmployeeFromDepartmentAsync(employeeDepartment);
+        }
+
 
 
         [HttpDelete]
