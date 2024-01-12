@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RelationalHumanResources.Migrations
 {
     /// <inheritdoc />
-    public partial class dimitris : Migration
+    public partial class Dimitris : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

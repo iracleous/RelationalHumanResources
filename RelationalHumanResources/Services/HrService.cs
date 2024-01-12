@@ -210,6 +210,10 @@ public class HrService : IHrService
         try
         {
             var employee = await _context.Employees.FindAsync(employeeDepartment.EmployeeId);
+            var department = await _context.Departments.FindAsync(employeeDepartment.DepartmentId);
+
+            department.Employees.Remove(employee);
+
             employee.Department = null;
             await _context.SaveChangesAsync();
             return new ApiResult<bool> { Data = true };

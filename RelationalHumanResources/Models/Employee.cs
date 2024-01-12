@@ -11,7 +11,7 @@ namespace RelationalHumanResources.Models
         public virtual List<SalaryHistory>
             SalaryHistory
         { get; set; } = [];
- 
 
+        public virtual List<Project> Projects { get; set; } = [];
     }
 }
