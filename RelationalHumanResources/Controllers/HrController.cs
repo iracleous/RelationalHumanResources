@@ -63,12 +63,7 @@ namespace RelationalHumanResources.Controllers
             return await _service.RemoveEmployeeFromDepartmentAsync(employeeDepartment);
         }
 
- 
-
-
-
-
-        [HttpDelete]
+         [HttpDelete]
         [Route("employee/{employeeId}")]
         public ApiResult<bool> DeleteEmployee(long employeeId)
         {

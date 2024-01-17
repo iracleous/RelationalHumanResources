@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using RelationalHumanResources.Data;
+using RelationalHumanResources.Models;
 using RelationalHumanResources.Services;
 using System.Text.Json.Serialization;
 
@@ -26,6 +27,10 @@ using (var dbContext = new HrDbcontext(optionsBuilder.Options))
 
 
 builder.Services.AddScoped<IHrService, HrService>();
+builder.Services.AddScoped<IGenService<Employee, long>,
+    GenService<Employee, long>>();
+builder.Services.AddScoped<IGenService<Project, long>,
+    GenService<Project, long>>();
 
 // swagger step 1/2
 builder.Services.AddEndpointsApiExplorer();
