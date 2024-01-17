@@ -4,7 +4,7 @@ using RelationalHumanResources.Dtos;
 
 namespace RelationalHumanResources.Services
 {
-    public class GenService<T, K> : IGenService<T, K>
+    public class GenService<T, K> : IGenService<T, K> where T : class
     {
         private readonly HrDbcontext _dbcontext;
         public GenService(HrDbcontext dbcontext)
@@ -25,19 +25,33 @@ namespace RelationalHumanResources.Services
             };
         }
 
-        public Task<ApiResult<bool>> DeleteByIdAsync(K id)
+        public async Task<ApiResult<bool>> DeleteByIdAsync(K id)
         {
-            throw new NotImplementedException();
+            T? item = await _dbcontext.Set<T>().FindAsync(id);
+            if (item != null)
+            {
+                _dbcontext.Set<T>().Remove(item);
+                await _dbcontext.SaveChangesAsync();
+                return new ApiResult<bool> { Data = true };
+            }
+            else
+            { 
+                return new ApiResult<bool> {  Status = -1 }; 
+            }
         }
 
-        public Task<ApiResult<List<T>>> ReadAllAsync()
+        public async Task<ApiResult<List<T>>> ReadAllAsync()
         {
-            throw new NotImplementedException();
+            return  new ApiResult<List<T>> { Data = await _dbcontext.Set<T>().ToListAsync() };
         }
 
-        public Task<ApiResult<T>> ReadByIdAsync(K id)
+        public async Task<ApiResult<T>> ReadByIdAsync(K id)
         {
-            throw new NotImplementedException();
+            return new ApiResult<T> { 
+                Data = await _dbcontext
+                .Set<T>()
+                .FindAsync (id)  
+            };
         }
 
         public Task<ApiResult<T>> UpdateAsync(K id, T model)
